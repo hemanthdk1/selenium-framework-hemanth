@@ -61,7 +61,7 @@ public class EmailFakePage extends BasePage {
 			throw new RuntimeException(e);
 		}
 		WebDriverContext.getDriver().navigate().refresh();
-		WebDriverWait wait = new WebDriverWait(WebDriverContext.getDriver(),5);
+		WebDriverWait wait = new WebDriverWait(WebDriverContext.getDriver(),10);
 		try {
 			wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//td[normalize-space()='Verify your account with the activation code below']/parent::tr/following-sibling::tr/td")));
 		} catch (TimeoutException timeoutException) {

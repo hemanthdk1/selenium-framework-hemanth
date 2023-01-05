@@ -12,8 +12,14 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
+import com.twilio.Twilio;
+import com.twilio.base.ResourceSet;
+import com.twilio.rest.api.v2010.account.Message;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * The Class represents ToyotaHomePage.
@@ -23,6 +29,8 @@ import java.util.List;
 public class ToyotaPurchaseNowPage extends BasePage {
 
 	List<String> windowHandles2;
+	public static final String ACCOUNT_SID="AC45fa9bae60427fcd1b71f032c8103454";
+	public static final String AUTH_TOKEN="8ba3bc1d9960e6b2a68b1e3b9dcaab04";
 
 	/*
 	* Overview Step Page Elements
@@ -88,6 +96,7 @@ public class ToyotaPurchaseNowPage extends BasePage {
 	 */
 	@FindBy(xpath = "//input[@id='email']")
 	private WebElement emailInputField;
+	
 	@FindBy(xpath = "//button[@id='emailVerificationControl_but_send_code']")
 	private WebElement emailVerificationBtn;
 
@@ -108,6 +117,15 @@ public class ToyotaPurchaseNowPage extends BasePage {
 
 	@FindBy(xpath = "//button[@id='continue']")
 	private WebElement signUpBtn;
+	
+	@FindBy(id="countryCode")
+	private WebElement countryCode;
+	
+	@FindBy(id="number")
+	private WebElement phoneNumber;
+	
+	@FindBy(xpath = "//button[@id='verifyCode']")
+	private WebElement sendCode;
 
 	@FindBy(xpath = "//button[@id='cancel']")
 	private WebElement cancelBtn;
@@ -197,10 +215,29 @@ public class ToyotaPurchaseNowPage extends BasePage {
 		ReportUtil.addScreenShot("Entered verfication code and other registration details on register new account window");
 		signUpBtn.click();
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(3000);	
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+		Select country= new Select(countryCode);
+		country.selectByValue("+1");
+		phoneNumber.sendKeys("9895821267");
+		sendCode.click();
+		try {
+			Thread.sleep(3000);	
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+//		//get OTP
+//		Twilio.init(ACCOUNT_SID,AUTH_TOKEN);
+//		String message = getMessage();
+//		ReportUtil.logMessage("OTP", message);
+//		System.out.println(message);
+//		try {
+//			Thread.sleep(5000);	
+//		} catch (InterruptedException e) {
+//			throw new RuntimeException(e);
+//		}
 		ReportUtil.logMessage("Click on cancel button on Phone verification window","Cancel button cliked");
 		cancelBtn.click();
 
@@ -213,6 +250,19 @@ public class ToyotaPurchaseNowPage extends BasePage {
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static String getMessage()
+	{
+		return getMessages().filter(m -> m.getDirection().compareTo(Message.Direction.INBOUND)==0)
+				.filter(m->m.getTo().equals("+19895821267")).map(Message::getBody).findFirst()
+				.orElseThrow(IllegalStateException :: new);
+	}
+	
+	public static Stream<Message> getMessages()
+	{	
+		ResourceSet<Message> messages = Message.reader(ACCOUNT_SID).read();
+		return StreamSupport.stream(messages.spliterator(),false);
 	}
 
 	public void scrollTo(WebElement element) {
