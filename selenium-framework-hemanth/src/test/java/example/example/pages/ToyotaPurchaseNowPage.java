@@ -30,7 +30,7 @@ public class ToyotaPurchaseNowPage extends BasePage {
 
 	List<String> windowHandles2;
 	public static final String ACCOUNT_SID="AC45fa9bae60427fcd1b71f032c8103454";
-	public static final String AUTH_TOKEN="8ba3bc1d9960e6b2a68b1e3b9dcaab04";
+	public static final String AUTH_TOKEN="a7b768722963bece84b05442237b4085";
 
 	/*
 	* Overview Step Page Elements
@@ -51,7 +51,15 @@ public class ToyotaPurchaseNowPage extends BasePage {
 
 	@FindBy(xpath = "//span[@class='Choices_Choices_submitBtnText__29fvN']")
 	private WebElement overviewMakeYourChoiceBtn;
-
+	
+	/*
+	 *  Baggage Verification Elements
+	 */
+	@FindBy(xpath="//img[@alt='Shopping Cart']")
+	private WebElement cartBag;
+	
+	@FindBy(xpath="//div[contains(@class,'MyOrder_Selections__1JU4F row')]/div[2]")
+	private WebElement camryDetails;
 	/*
 	 * Choices Step Page Elements
 	 */
@@ -150,8 +158,19 @@ public class ToyotaPurchaseNowPage extends BasePage {
 		Assert.assertTrue(overviewModelGradeTxt.getText().contains("SE"),"Model Grade did not match expected text");
 		scrollTo(overviewMakeYourChoiceBtn);
 		ReportUtil.logMessage("Validate Overview Page","Validated details on overview page");
+		selectCartBagStep();
+		JavascriptExecutor javascriptExecutor = (JavascriptExecutor) WebDriverContext.getDriver();
+		javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);",overviewMakeYourChoiceBtn);
 		overviewMakeYourChoiceBtn.click();
 		ReportUtil.logMessage("Click on make your choice button","Make Your Choice button clicked");
+	}
+	
+	public void selectCartBagStep()
+	{
+		cartBag.click();
+		ReportUtil.logMessage("Click on cart Bag button", "Cart Bag Button clicked");
+		Assert.assertTrue(camryDetails.getText().contains("2.5L CAMRY 2023"),"Camry Details not Available");
+		ReportUtil.logMessage("Validate Baggage Page","Validated details on CartBaggage page");
 	}
 
 	public void confirmChoicesAndMoveToFinancesStep() {
@@ -229,6 +248,7 @@ public class ToyotaPurchaseNowPage extends BasePage {
 			throw new RuntimeException(e);
 		}
 //		//get OTP
+//		ReportUtil.logMessage("Auth SID", ACCOUNT_SID);
 //		Twilio.init(ACCOUNT_SID,AUTH_TOKEN);
 //		String message = getMessage();
 //		ReportUtil.logMessage("OTP", message);
@@ -259,7 +279,7 @@ public class ToyotaPurchaseNowPage extends BasePage {
 				.orElseThrow(IllegalStateException :: new);
 	}
 	
-	public static Stream<Message> getMessages()
+	private static Stream<Message> getMessages()
 	{	
 		ResourceSet<Message> messages = Message.reader(ACCOUNT_SID).read();
 		return StreamSupport.stream(messages.spliterator(),false);

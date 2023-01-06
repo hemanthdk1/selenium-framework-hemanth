@@ -32,6 +32,7 @@ public class ToyotaBookACarTest extends BaseTest {
 
 		toyotaPurchaseNowPage.validatePurchaseNowPage();
 		toyotaPurchaseNowPage.validateOverviewAndMoveToChoicesStep();
+	
 		toyotaPurchaseNowPage.confirmChoicesAndMoveToFinancesStep();
 		toyotaPurchaseNowPage.selectFinancesAndMoveToDepositStep();
 
