@@ -9,7 +9,8 @@ POM Framework, Singleton,
 Selenium,
 Java,
 Maven,
-ExtentReports
+ExtentReports,
+Listeners for Log and Report Management
 
 Launch:
 Through TestNG suite or 
